@@ -14,3 +14,4 @@ source("libraries.R")
 
 rmarkdown::render("README.Rmd")
 rmarkdown::render("index.Rmd")
+rmarkdown::render("extras.Rmd")

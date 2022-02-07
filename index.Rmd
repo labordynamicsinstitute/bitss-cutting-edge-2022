@@ -1,0 +1,154 @@
+---
+title: "Cutting Edge Reproducibility in Economics"
+author: 
+  - "Lars Vilhuber"
+date: "`r Sys.Date()`"
+output: 
+  ioslides_presentation:
+    incremental: false
+    self-included: true
+    widescreen: true
+    css: extra.css
+---
+
+## Overview
+
+::: {.columns-2}
+
+
+### Problems with computational reproducibility
+
+- Software changes
+- Packages
+- Inconsistencies across steps
+- Adapting to confidential / big data
+
+### Solutions seldomly used
+
+- Regular/automated recomputations
+- Packaging of software as part of the computational artifacts
+
+Along for the ride
+
+- Greater efficiency during project development
+
+
+:::
+
+# Fine... but: proprietary code!
+
+---
+
+::: {.columns-2}
+
+
+### Proposal: Use open-source software
+
+But:
+
+- Software changes
+- Packages
+- Inconsistencies across steps
+- Adapting to confidential / big data
+
+<p class="forceBreak"></p>
+
+None of what follows requires open-source software, nor is invalidated by proprietary software.
+
+With one caveat: "License rot"
+
+
+
+:::
+  
+
+# OK... but: open-source software has great versioning tools!
+
+---
+
+
+![](images/R-logo.png)
+
+- [`renv`](https://rstudio.github.io/renv/)
+- [`packrat`](https://rstudio.github.io/packrat/)
+- Package repositories ([`mran`](https://mran.microsoft.com/timemachine), [Rstudio Public Package Manager](https://packagemanager.rstudio.com/client/#/))
+
+---
+
+
+![](images/julia-logo.png)
+
+- [`Project.toml` and `Manifest.toml`](https://pkgdocs.julialang.org/v1/toml-files/)
+
+
+:::
+  
+## A partial Solution
+
+The various package managers in open source software can be a partial solution, when properly implemented. The discussion here today is *one* way to implement them, which promotes highly reproducible *system* setup to support reproducibility.
+
+- Caveats: availability of packages that are being installed (hosted on Github!)
+
+However, it does not *require* any one of the above package managers. 
+
+## Part of the problem
+
+To make the package managers complete, users need to specify versions of the underlying software as well as of the package.
+
+*Insufficient*
+
+```{r, eval=FALSE}
+install.packages("superreg")
+```
+
+*Better* but **almost never used**
+
+```{r, eval=FALSE}
+remotes::install_version("superreg",version = "1.2.3")
+```
+
+---
+
+*Better* but **never** used
+
+```{r, eval=FALSE}
+if ( R.Version()$major >= 4 & R.Version()$minor >= 0.5 ) { 
+remotes::install_version("superreg",version = "1.2.3")
+}
+```
+
+
+# Fine... but: proprietary code!
+
+## Everything here also works with proprietary code
+
+- But it can be more complicated
+- I will show easy-to-use Stata
+
+# Part 1 | Ideal structure
+
+## Imposes some best practices
+
+
+::: {.columns-2}
+
+### Best practices
+
+- Master script preferred
+- No manual copying of results 
+- No manual install of packages
+- Use platform-neutral path names (`c/myprojects/thisone` instead of `C:\myprojects\thisone`)
+
+
+### Here 
+
+- Master script *required*
+- Results *must* be written out programmatically
+- All packages must be installed by scripts*
+- Naturally imposes forward-slashes[*](extras.html)
+
+
+:::
+
+
+
