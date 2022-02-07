@@ -1,16 +1,16 @@
 ---
-title: "Cutting Edge Reproducibility in Economics"
-author: 
-  - "Lars Vilhuber"
+title: "Part 3: Safe and efficient big data access"
+author: "Lars Vilhuber"
 date: "`r Sys.Date()`"
 output: 
   ioslides_presentation:
     incremental: false
     self-included: true
     widescreen: true
-    css: extra.css
+  html_document:
+editor_options: 
+  chunk_output_type: console
 ---
-
 
 ```{r setup, include=FALSE}
 # At a minimum, this project environment should have rprojroot - the rest can later be dynamically added if necessary.
@@ -20,167 +20,28 @@ basepath <- rprojroot::find_root(rprojroot::has_file("README.md"))
 source(file.path(basepath,"libraries.R"))
 ```
 
-## Overview
 
-::: {.columns-2}
+## Intro
 
-
-### Problems with computational reproducibility
-
-- Software changes
-- Packages
-- Inconsistencies across steps
-- Adapting to confidential / big data
-
-### Solutions seldomly used
-
-- Regular/automated recomputations
-- Packaging of software as part of the computational artifacts
-
-Along for the ride
-
-- Greater efficiency during project development
-
-
-:::
-
-# Fine... but: proprietary code!
-
----
-
-::: {.columns-2}
-
-
-### Proposal: Use open-source software
-
-But:
-
-- Software changes
-- Packages
-- Inconsistencies across steps
-- Adapting to confidential / big data
-
-<p class="forceBreak"></p>
-
-None of what follows requires open-source software, nor is invalidated by proprietary software.
-
-With one caveat: "License rot"
-
-
-
-:::
-  
-
-# OK... but: open-source software has great versioning tools!
-
----
-
-
-![](images/R-logo.png)
-
-- [`renv`](https://rstudio.github.io/renv/)
-- [`packrat`](https://rstudio.github.io/packrat/)
-- Package repositories ([`mran`](https://mran.microsoft.com/timemachine), [Rstudio Public Package Manager](https://packagemanager.rstudio.com/client/#/))
-
----
-
-
-![](images/julia-logo.png)
-
-- [`Project.toml` and `Manifest.toml`](https://pkgdocs.julialang.org/v1/toml-files/)
-
-
-:::
-  
-## A partial Solution
-
-The various package managers in open source software can be a partial solution, when properly implemented. The discussion here today is *one* way to implement them, which promotes highly reproducible *system* setup to support reproducibility.
-
-- Caveats: availability of packages that are being installed (hosted on Github!)
-
-However, it does not *require* any one of the above package managers. 
-
-## Part of the problem
-
-To make the package managers complete, users need to specify versions of the underlying software as well as of the package.
-
-*Insufficient*
-
-```{r, eval=FALSE}
-install.packages("superreg")
-```
-
-*Better* but **almost never used**
-
-```{r, eval=FALSE}
-remotes::install_version("superreg",version = "1.2.3")
-```
-
----
-
-*Better* but **never** used
-
-```{r, eval=FALSE}
-if ( R.Version()$major >= 4 & R.Version()$minor >= 0.5 ) { 
-remotes::install_version("superreg",version = "1.2.3")
-}
-```
-
-
-# Fine... but: proprietary code!
-
-## Everything here also works with proprietary code
-
-- But it can be more complicated
-- I will show easy-to-use Stata
-
-# Part 1 | Ideal structure
-
-## Imposes some best practices
-
-
-::: {.columns-2}
-
-### Best practices
-
-- Master script preferred
-- No manual copying of results 
-- No manual install of packages
-- Use platform-neutral path names (`c/myprojects/thisone` instead of `C:\myprojects\thisone`)
-
-
-### Here 
-
-- Master script *required*
-- Results *must* be written out programmatically
-- All packages must be installed by scripts*
-- Naturally imposes forward-slashes[*](extras.html)
-
-
-:::
-
-
-# An example: R with API and big data
-
-We will use an example which has the following features: it uses big data, and it has one private parameter (an API key) that we do not want to put out there.
-
-We're then going to add a complication: We want to run a downstream part in Stata.
-
-How can we get this to be
-
-- robust
-- repeatable
-- push-button
-- in the cloud
+This document intends to demonstrate two methods of accessing big (or confidential) data. The first seems at first glance to be the most efficient way of doing it. But once you factor in time or cost constraints, there will be issues. 
+The second method therefore breaks down the data and processing stream into separate components, and allows to separate the time consuming part from other reproducible parts.
 
 ## Context
 
 We will use U.S. Census Bureau data (American Community Survey data) through an API. Downloading the entire corpus of ACS data would consume multiple 100 GB, but the API allows us to slice and dice the data. The example we will use will artificially reduce the amount of data for illustrative purposes, but we identify how this simple example becomes a "big data" example.
 
-> The full example can be found [here](part3.html) ([R source](https://github.com/labordynamicsinstitute/bitss-cutting-edge-2022/blob/main/part3.Rmd)). Refer to it for full requirements and reproducibility setup, as well as how to scale from the toy example to the full setup.
+## Reproducibility setup
+
+To make this whole setup reproducible, you can use several methods. For instance, you could use packages such as `checkpoint` to provide a reproducible environment. Please consult the [Checkpoint vignette](https://cran.r-project.org/web/packages/checkpoint/vignettes/checkpoint.html). 
+
+Here, we have used a [**Docker image**](https://hub.docker.com/r/larsvilhuber/reproducibility-confidential) configured to use the [Rstudio Package Manager](https://packagemanager.rstudio.com/client/), fixed at **`r mran.date`**.
 
 
-```{r install-load-tidycensus,include=FALSE}
+## Requirements {.smaller}
+
+Other than a number of R requirements for general processing (`tidyverse`, citation), we will rely on the `tidycensus` package (citation here). 
+
+```{r install-load-tidycensus}
 pkgTest <- function(x)
 {
 	if (!require(x,character.only = TRUE))
@@ -525,3 +386,6 @@ What is the connection with confidential data?
 
 </div>
 
+
+
+# Next [Part 4](part4.pdf)
