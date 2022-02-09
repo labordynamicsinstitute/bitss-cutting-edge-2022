@@ -87,8 +87,9 @@ sessionInfo()
 ## [1] stats     graphics  grDevices utils     datasets  methods   base     
 ## 
 ## other attached packages:
-## [1] readr_1.4.0     tidycensus_1.1  ggplot2_3.3.3   tictoc_1.0.1   
-## [5] rprojroot_2.0.2 devtools_2.4.1  usethis_2.0.1   dplyr_1.0.6    
+## [1] webshot_0.5.2   readr_1.4.0     tidycensus_1.1  ggplot2_3.3.3  
+## [5] tictoc_1.0.1    rprojroot_2.0.2 devtools_2.4.1  usethis_2.0.1  
+## [9] dplyr_1.0.6    
 ## 
 ## loaded via a namespace (and not attached):
 ##  [1] httr_1.4.2         sass_0.4.0         pkgload_1.2.1      tidyr_1.1.3       
@@ -103,7 +104,7 @@ sessionInfo()
 ## [37] ps_1.6.0           fs_1.5.0           fansi_0.4.2        xml2_1.3.2        
 ## [41] foreign_0.8-81     class_7.3-18       pkgbuild_1.2.0     tools_4.0.5       
 ## [45] prettyunits_1.1.1  hms_1.0.0          lifecycle_1.0.0    stringr_1.4.0     
-## [49] munsell_0.5.0      callr_3.7.0        compiler_4.0.5     jquerylib_0.1.4   
+## [49] munsell_0.5.0      callr_3.7.0        jquerylib_0.1.4    compiler_4.0.5    
 ## [53] e1071_1.7-9        rlang_0.4.11       classInt_0.4-3     units_0.7-2       
 ## [57] grid_4.0.5         rappdirs_0.3.3     rmarkdown_2.8      testthat_3.0.2    
 ## [61] gtable_0.3.0       DBI_1.1.1          R6_2.5.0           knitr_1.33        
