@@ -48,7 +48,6 @@ Along for the ride
 
 ---
 
-::: {.columns-2}
 
 
 ### Proposal: Use open-source software
@@ -60,16 +59,13 @@ But:
 - Inconsistencies across steps
 - Adapting to confidential / big data
 
-<p class="forceBreak"></p>
+
 
 None of what follows requires open-source software, nor is invalidated by proprietary software.
 
-With one caveat: "License rot"
+With one caveat: **"License rot"**
 
 
-
-:::
-  
 
 # OK... but: open-source software has great versioning tools!
 
@@ -89,14 +85,16 @@ With one caveat: "License rot"
 
 - [`Project.toml` and `Manifest.toml`](https://pkgdocs.julialang.org/v1/toml-files/)
 
-
-:::
   
 ## A partial Solution
 
-The various package managers in open source software can be a partial solution, when properly implemented. The discussion here today is *one* way to implement them, which promotes highly reproducible *system* setup to support reproducibility.
+The various package managers in open source software can be a **partial** solution, when properly implemented. 
+
 
 - Caveats: availability of packages that are being installed (hosted on Github!)
+
+
+The discussion here today is *one* way to implement them, which promotes highly reproducible *system* setup to support reproducibility. But it also works for *any* set of software packages, with or without package manager.
 
 However, it does not *require* any one of the above package managers. 
 
@@ -116,7 +114,7 @@ install.packages("superreg")
 remotes::install_version("superreg",version = "1.2.3")
 ```
 
----
+## Part of the problem
 
 *Better* but **never** used
 
@@ -126,13 +124,14 @@ remotes::install_version("superreg",version = "1.2.3")
 }
 ```
 
+> Hardly ever seen...
 
 # Fine... but: proprietary code!
 
 ## Everything here also works with proprietary code
 
 - But it can be more complicated
-- I will show easy-to-use Stata
+- I will show "easy-to-use" *Stata*
 
 # Part 1 | Ideal structure
 
@@ -162,6 +161,8 @@ remotes::install_version("superreg",version = "1.2.3")
 
 # An example: R with API and big data
 
+## An example: R with API and big data
+
 We will use an example which has the following features: it uses big data, and it has one private parameter (an API key) that we do not want to put out there.
 
 We're then going to add a complication: We want to run a downstream part in Stata.
@@ -175,10 +176,13 @@ How can we get this to be
 
 ## Context
 
-We will use U.S. Census Bureau data (American Community Survey data) through an API. Downloading the entire corpus of ACS data would consume multiple 100 GB, but the API allows us to slice and dice the data. The example we will use will artificially reduce the amount of data for illustrative purposes, but we identify how this simple example becomes a "big data" example.
+We will use **U.S. Census Bureau data** (American Community Survey data) through an API. Downloading the entire corpus of ACS data would consume multiple **100 GB**, but the API allows us to slice and dice the data. 
 
-> The full example can be found [here](part3.html) ([R source](https://github.com/labordynamicsinstitute/bitss-cutting-edge-2022/blob/main/part3.Rmd)). Refer to it for full requirements and reproducibility setup, as well as how to scale from the toy example to the full setup.
+The example we will use will artificially reduce the amount of data for illustrative purposes, but we identify how this simple example becomes a "big data" example.
 
+```{block, type="bbox"}
+The full example can be found [here](part3.html) ([R source](https://github.com/labordynamicsinstitute/bitss-cutting-edge-2022/blob/main/part3.Rmd)). Refer to it for full requirements and reproducibility setup, as well as how to scale from the toy example to the full setup.
+```
 
 ```{r install-load-tidycensus,include=FALSE}
 pkgTest <- function(x)
@@ -214,78 +218,27 @@ if ( file.exists("~/.Renviron") ) { readRenviron("~/.Renviron") }
 census_api_key(Sys.getenv("CENSUS_API_KEY"))
 ```
 
-## Basic example
+## Trivial example
 
-We're going to follow the "[Basic Usage tutorial](https://walker-data.com/tidycensus/articles/basic-usage.html) from the `tidycensus` website, and compute the median age by state for 2010:
+We're going to adapt the "[Basic Usage tutorial](https://walker-data.com/tidycensus/articles/basic-usage.html) from the `tidycensus` website, and compute the median age by county for 2010 (but for illustration, we'll cut it down).
 
-```{r median_age_state}
-time.age10 <- system.time(age10 <- get_decennial(geography = "state",
-                       variables = "P013001",
-                       year = 2010))
-```
-
----
-
-
-That was fast: 
-
-```{r timing}
-# time it took to run this
-time.age10
-```
-
-it took **`r time.age10[3]` seconds**. But it only generated `r nrow(age10)` observations! 
-
-```{r inspect}
-# inspect the data
-head(age10)
-```
-
----
-
-```{r stats}
-# some stats
-summary(age10)
-```
-
-
-## Bigger example
-
-What if we used a bit more detail for this? Let's see this for Tompkins county (FIPS code "36109")
+Let's see this for one county: Tompkins county (FIPS code "36109")
 
 ```{r median_age_block}
 start.time <- Sys.time()
-age10block <- get_decennial(geography = "block",state="NY", county="109", show_call=FALSE,
+age10block <- get_decennial(geography = "block", state="NY", county="109", show_call=FALSE,
                        variables = "P013001",year = 2010)
-time.block <- Sys.time() - start.time
+time.block <- round(Sys.time() - start.time,digits=2)
 ```
 
----
+## Trivial example
 
-That took 
+That took **`r time.block` seconds**. It generated `r nrow(age10block)` observations. 
 
-```{r median_age_block_time}
-# time it took to run this
-time.block
-```
-
-**`r time.block` seconds**. It generated `r nrow(age10block)` observations. 
-
-For ONE county.  
-
-There are `r nrow(fips_codes)` counties in total. 
+For ONE county.  There are *`r nrow(fips_codes)`* counties in total. 
 
 
-## Big data
 
-In total, there are
-
-```{r total_counties}
-nrow(fips_codes)
-```
-counties.
-
-But let's limit ourselves:
 
 ```{r set_up_big}
 # prepare the next block
@@ -297,7 +250,7 @@ counties.to.query <- 30
 
 Let's see how long this takes for the first `r counties.to.query` counties.
 
----
+## Big data {.smaller}
 
 ```{r loop_over_counties,cache=TRUE}
 # tidycensus/Census API forces to loop over counties
@@ -321,24 +274,15 @@ for (row in 1:counties.to.query ) {
 }
 end.time <- Sys.time()
 elapsed.time <- end.time - start.time
-
+elapsed.scale <- round(elapsed.time / counties.to.query * nrow(fips_codes),1)
 
 ```
 
----
+## Big data 
 
 That took **`r round(elapsed.time,2)` seconds** for `r counties.to.query` of `r nrow(fips_codes)` counties, yielding `r nrow(blocks)` records. 
 
-You could estimate the total time as:
-
-```{r estimate_time}
-elapsed.scale <- elapsed.time / counties.to.query * nrow(fips_codes)
-elapsed.scale
-```
-
-yielding
-
-> **`r round(elapsed.scale/60,1)`** minutes
+Total time will be approximately  **`r round(elapsed.scale/60,1)`** minutes
 
 Would you want to incur that time every time you run the code for the entire country?
 
