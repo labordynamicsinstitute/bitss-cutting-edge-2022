@@ -5,7 +5,8 @@ output:
 ---
 # Cutting-edge tools for reproducibility
 
-Prepared for presentation at [BITSS 2022 Annual Meeting]() on 2021-10-29.
+Prepared for presentation at [BITSS 2022 Annual Meeting]() on 2022-02-11. Archived as 
+[![DOI](https://zenodo.org/badge/DOI/10.5281/zenodo.6046487.svg)](https://doi.org/10.5281/zenodo.6046487)
 
 ## Creating Presentation Slides
 
