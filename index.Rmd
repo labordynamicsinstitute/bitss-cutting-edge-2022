@@ -44,35 +44,10 @@ Along for the ride
 
 :::
 
-# Fine... but: proprietary code!
-
----
-
-
-
-### Proposal: Use open-source software
-
-But:
-
-- Software changes
-- Packages
-- Inconsistencies across steps
-- Adapting to confidential / big data
-
-
-::: {.bboxc}
-
-None of what follows requires open-source software, nor is invalidated by proprietary software.
-
-:::
-
-With one caveat: **"License rot"**
-
-
 
 # OK... but: open-source software has great versioning tools!
 
----
+## True.
 
 
 ![](images/R-logo.png)
@@ -120,7 +95,7 @@ remotes::install_version("superreg",version = "1.2.3")
 
 ## Part of the problem
 
-*Better* but almost **never** used
+*Much better* but almost **never** used
 
 ```{r, eval=FALSE}
 if ( R.Version()$major >= 4 & R.Version()$minor >= 0.5 ) { 
@@ -131,6 +106,17 @@ remotes::install_version("superreg",version = "1.2.3")
 
 
 # Fine... but: proprietary code!
+
+## Proprietary code
+
+::: {.bboxc}
+
+None of what follows requires open-source software, nor is invalidated by proprietary software.
+
+:::
+
+With one caveat: **"License rot"**
+
 
 ## Everything here also works with proprietary code
 
@@ -240,6 +226,7 @@ age10block <- get_decennial(geography = "block", state="NY", county="109",
 ```
 ```{r end_timer1,echo=FALSE}
 time.block <- round(Sys.time() - start.time,digits=2)
+mysysinfo <- try(system("cat /proc/cpuinfo | grep 'model name' | tail -1 | awk -F: '{ print $2 } '",intern=TRUE))
 ```
 
 
@@ -294,9 +281,10 @@ That took **`r round(elapsed.time,2)` seconds** for `r counties.to.query` of `r 
 
 ::: {.bbox}
 
-Estimated total time will be approximately  **`r round(elapsed.scale/60,1)`** minutes
+Estimated total time will be approximately  **`r round(elapsed.scale/60,1)` minutes** on **my `r mysysinfo`-based system.**
 
 :::
+
 
 # Possible problems
 
@@ -377,9 +365,13 @@ I have [written about Docker in Economics](https://aeadataeditor.github.io/posts
 Containers are “implementations of operating system-level virtualization,”[^1] typically on Linux... "packages up code and all its dependencies so the application runs quickly and reliably from one computing environment to another."[^2]
 ```
 
+![Docker home](images/home-docker.png)
+
 ## Singularity
 
-I'm going to focus on Docker (more common in the commercial world), but there are other implementations, such as [Singularity](https://singularity.hpcng.org/), and a common standard for "container" specifications/structure. 
+I'm going to focus on Docker (more common in the commercial world), but there are other implementations, such as [Singularity](https://singularity.hpcng.org/), and a [common standard for "container" specifications/structure.](https://www.opencontainers.org/)
+
+![Syslabs page](images/home-singularity.png)
 
 
 # Docker in Economics is rare
@@ -388,11 +380,11 @@ The use of containers as part of replication packages in economics is **extremel
 
 For an  excellent introduction, see Boettinger (2015) [^intro].
 
-## Basic principles
+## Basic principle
 
 **Isolation**: means that 
 
-- in principle all dependencies are handled
+- in principle all dependencies are handled (at build time)
 - there should be virtually no differences across 
   - time, 
   - users' environment (operating system, system settings)
@@ -457,7 +449,7 @@ Most examples on internet use containers in conjunction with open-source languag
 
 ## Specifying a container
 
-- `Dockerfile`:
+- [`Dockerfile`](https://github.com/AEADataEditor/docker-r-starter/blob/main/Dockerfile):
 
 ```{docker}
 FROM rocker/r-ver:4.0.1
@@ -483,6 +475,13 @@ MYHUBID=larsvilhuber
 DOCKER_BUILDKIT=1 docker build . -t $MYHUBID/$MYIMG:$TAG
 ```
 
+or simply
+
+```{block, type="bboxc"}
+
+`docker build . -t larsvilhuber/bitss-cutting-edge-2022:2022-02-10`
+
+```
 
 ```{bash,eval=FALSE}
 [+] Building 4.7s (17/17) FINISHED                                              
@@ -495,8 +494,17 @@ DOCKER_BUILDKIT=1 docker build . -t $MYHUBID/$MYIMG:$TAG
  => => naming to docker.io/larsvilhuber/bitss-cutting-edge-2022:2022-02-10 0.0s
 ```
 
-This locks in our R environment, at the time of building (`$TAG`). It is then straightforward to run the authors' code, reliably, over and over again. 
+This locks in our R environment, at the time of building (`$TAG`). It is then straightforward to run code, reliably, over and over again. 
 
+## Sharing container
+
+I can upload it to Docker Hub, where anybody can now use it:
+
+```{bash,eval=FALSE}
+docker push larsvilhuber/bitss-cutting-edge-2022:2022-02-10
+```
+
+(reproducibility!)
 
 ## Running a container
 
@@ -510,16 +518,20 @@ docker run --rm \
    Rscript main.R
 ```
 
-Or: in the cloud.
+# Or: in the cloud.
+
+![](images/clouds.png)
 
 ## Setting up cloud computing
 
 In this example, 
 
-- Github
-- Github Actions
-- API key as a `Github Actions Secret`
-- Docker container
+- Github - *to store the code*
+- Github Actions - *to run the code/container*
+- API key as a `Github Actions Secret` - *to be able to access data*
+- Docker container - *to ensure speed and reproducibility*
+
+NOTE: The container is not strictly needed, but ensures that we do not *HAVE* to use the cloud to run this!
 
 ## Example: this presentation {.smaller}
 
@@ -556,24 +568,353 @@ In this example,
 ![Image on Docker Hub](images/docker-hub-image.png)
 
 
+## Example: this presentation {.smaller}
+
+![](images/github-action-running2.png)
+
+
+## Example: this presentation {.smaller}
+
+![](images/github-action-running3.png)
+
+
+# Can you make that easier? 
+
+```
+[+] Building 829.1s (13/13) FINISHED                                              
+ => [internal] load build definition from Dockerfile                         0.0s
+ => => transferring dockerfile: 751B                                         0.0s
+ => [internal] load .dockerignore                                            0.2s
+ => => transferring context: 2B                                              0.0s
+ => [internal] load metadata for docker.io/rocker/verse:4.0.5                1.1s
+ => [auth] rocker/verse:pull token for registry-1.docker.io                  0.0s
+ => [1/7] FROM docker.io/rocker/verse:4.0.5@sha256:a4ce6ebbe27d70c98645f765  0.0s
+ => [internal] load build context                                            0.1s
+ => => transferring context: 1.52kB                                          0.0s
+ => CACHED [2/7] RUN apt-get update     && DEBIAN_FRONTEND=noninteractive a  0.0s
+ => CACHED [3/7] WORKDIR /home/rstudio                                       0.0s
+ => [4/7] COPY libraries-src.R install-src.R                                 0.0s
+ => [5/7] COPY libraries.R install.R                                         0.0s
+ => [6/7] RUN Rscript install-src.R                                        788.5s
+ => [7/7] RUN Rscript install.R                                             37.5s 
+ => exporting to image                                                       1.2s 
+ => => exporting layers                                                      1.2s 
+ => => writing image sha256:73cf6ac6b5a8a84f72fff729879b46d14340352761bb158  0.0s 
+ ```
+
+# Sure.
+
 ## Running Docker the Easy Way
 
-Of course, this may all seem overwhelming and complicated, as any new piece of software. Which is why several services are available that make this all a lot easier. These include [CodeOcean](https://codeocean.com/), [WholeTale](https://wholetale.org/), [Binder](https://mybinder.org/), and others (see Konkol et al, 2020,[^konkol] for a broader overview). Behind the scenes, these use containers as well, sometimes built on the fly, but also able to archive the containers, ensuring persistence of what hopefully are reproducible containers.
+Of course, this may all seem overwhelming and complicated, as any new piece of software. Which is why several services are available that make this all a lot easier. 
 
-We have started to use these services to enable reproducibility verification in an environment which allows us, when the time inevitably arrives, to share the exact environment with the authors in order to debug code. In contrast with the statement "Author, please use this Docker image to reproduce the issue", the request "Author, please click on this URL to reproduce the issue" is much simpler. Several authors have been offered both options (no RCT...), and have generally preferred the option of an online easy interface to the ability to run Docker or Singularity locally. 
+- [CodeOcean](https://codeocean.com/)
+- [WholeTale](https://wholetale.org/)
+- [Binder](https://mybinder.org/), 
 
-And we have started to leverage the ability to also publish these reproducible artifacts. Recent examples include Rossi (2021)[^rossi] and DellaVigna and Pope (2021)[^stefano]. In both cases, we were able to populate the [CodeOcean](https://doi.org/10.24433/CO.7940775.v1) [capsule](https://doi.org/10.24433/CO.0687784.v1) when we ran into reproducibility issues, sharing it (via a URL) with the authors, and solving the issue that both satisfied the AEA Data Editor, and is likely to satisfy future replicators as well. 
+and others (see Konkol et al, 2020,[^konkol] for a broader overview). 
+
+Behind the scenes, these use containers as well, sometimes built on the fly, but also able to archive the containers, ensuring persistence of what hopefully are reproducible containers.
+
+## But: Continuous Integration
+
+Most of the user-friendly online systems are meant to be interactive.
+
+- CodeOcean has a "button" to test push-button reproducibility ![Image of CodeOcean button](images/codeocean-reproducible-run-button.png)
+
+Reproducible but not CI.
+
+## But: Portability {.smaller}
+
+When run on my Linux Workstation:
+```
+Replicator system
+-----------------
+* "openSUSE Leap 15.3"
+* AMD Ryzen 9 3900X 12-Core Processor, 24 cores , 31GB memory 
+* Docker version 20.10.12-ce, build 459d0dfbbb51 
+```
+
+When run on my MacBook
+```
+Replicator system
+-----------------
+* macOS 12.1 (Darwin version 21.2.0)
+* Intel(R) Core(TM) i5-7267U CPU @ 3.10GHz ,  2  cores,  8 GB memory 
+* Docker version 20.10.12, build e91ed57 
+```
+
+When run in a cloud system
+```
+Replicator system
+-----------------
+* "Ubuntu 20.04.3 LTS"
+* model name : Intel(R) Xeon(R) Platinum 8272CL CPU @ 2.60GHz ,  2  cores,  3 GB memory 
+* Docker version 20.10.11+azure-3, build dea9396e184290f638ea873c76db7c80efd5a1d2 
+```
+
+# You promised us Stata!
+
+![Stata GUI](images/stata-gui-osx.png)
+
+# OK, but here's where I'll lose a few folks
+
+## Stata command line
+
+![Stata Terminal](images/stata-cmd-linux.png)
+
+## Stata command line
+
+- No manual saving of figures
+- No data browsing or manual edits of data
+
+But you weren't using any of those things anyway, right? Right?
+
+
+## Setting up cloud computing: Stata
+
+For this example, 
+
+- Github - *to store the code*
+- Github Actions - *to run the code/container*
+- License key as a `Github Actions Secret` - *to be able to run Stata*
+- Docker container - *to ensure speed and reproducibility* **and not need to install Stata every time**
+
+NOTE: [Project is here](https://github.com/labordynamicsinstitute/sample-project-stata).
+
+## Example: Stata example {.smaller}
+
+- **Github**
+- **Github Actions**
+- API key as a `Github Actions Secret`
+- Docker container
+
+[![Compute analysis](https://github.com/labordynamicsinstitute/sample-project-stata/actions/workflows/compute.yml/badge.svg)](https://github.com/labordynamicsinstitute/sample-project-stata/actions/workflows/compute.yml) [github.com/labordynamicsinstitute/sample-project-stata/.../workflows/compute.yml](https://github.com/labordynamicsinstitute/sample-project-stata/blob/main/.github/workflows/compute.yml)
+
+
+```{yaml}
+     - name: Create license
+        run: |
+            echo "${{ secrets.STATA_LIC_BASE64 }}" | base64 -d > stata.lic 
+            ls -l stata.lic
+      # Compute the main result, re-using the run.sh script
+      -  name: Compute
+         run: "bash -x ./run.sh ./stata.lic"
+```
+
+
+
+## Example: Stata example {.smaller}
+
+- Github
+- **Github Actions** - wrapper around the Docker call
+- API key as a `Github Actions Secret`
+- Docker container
+
+```{bash, eval=FALSE}
+time docker run $DOCKEROPTS \
+  -v ${STATALIC}:/usr/local/stata/stata.lic \
+  -v $(pwd)/${codedir}:/code \
+  -v $(pwd)/data:/data \
+  $DOCKERIMG:$TAG -b $basefile
+```
+
+## Example: Stata example {.smaller}
+
+- Github
+- Github Actions
+- **API key as a `Github Actions Secret`** ([how](https://docs.github.com/en/actions/security-guides/encrypted-secrets) and [how](https://github.com/AEADataEditor/stata-project-with-docker#setting-up-github-actions-and-configure-the-stata-license-in-the-cloud))
+- Docker container
+
+![repo-secret](images/github-secret-stata.png)
+
+```{bash, eval=FALSE}
+ gh secret set STATA_LIC_BASE64 -b"$(cat stata.lic | base64)" -v all -o YOURORG
+```
+
+## Example: Stata example {.smaller}
+
+- Github
+- Github Actions
+- API key as a `Github Actions Secret`
+- **Docker container** (Using a general container here without modification - note: no official Stata image!)
+
+![Image on Docker Hub](images/docker-hub-image2.png)
+
+
+## Example: Stata example {.smaller}
+
+![](images/github-action-running-stata1.png)
+
+
+## Example: Stata example {.smaller}
+
+![](images/github-action-running-stata2.png)
+
+
+
+
+## Example: Stata example {.smaller}
+
+![](images/github-action-running-stata3.png)
+
+
+
+
+## Example: Stata example {.smaller}
+
+![](images/github-action-running-stata4.png)
+
+
+## Detailed tutorial
+
+[https://github.com/AEADataEditor/stata-project-with-docker](https://github.com/AEADataEditor/stata-project-with-docker)
+
+![guidance](images/github-stata-docker-tutorial.png)
+
+
+# REALLY: Can you make that easier? 
+
+```
+[+] Building 829.1s (13/13) FINISHED                                              
+ => [internal] load build definition from Dockerfile                         0.0s
+ => => transferring dockerfile: 751B                                         0.0s
+ => [internal] load .dockerignore                                            0.2s
+ => => transferring context: 2B                                              0.0s
+ => [internal] load metadata for docker.io/rocker/verse:4.0.5                1.1s
+ => [auth] rocker/verse:pull token for registry-1.docker.io                  0.0s
+ => [1/7] FROM docker.io/rocker/verse:4.0.5@sha256:a4ce6ebbe27d70c98645f765  0.0s
+ => [internal] load build context                                            0.1s
+ => => transferring context: 1.52kB                                          0.0s
+ => CACHED [2/7] RUN apt-get update     && DEBIAN_FRONTEND=noninteractive a  0.0s
+ => CACHED [3/7] WORKDIR /home/rstudio                                       0.0s
+ => [4/7] COPY libraries-src.R install-src.R                                 0.0s
+ => [5/7] COPY libraries.R install.R                                         0.0s
+ => [6/7] RUN Rscript install-src.R                                        788.5s
+ => [7/7] RUN Rscript install.R                                             37.5s 
+ => exporting to image                                                       1.2s 
+ => => exporting layers                                                      1.2s 
+ => => writing image sha256:73cf6ac6b5a8a84f72fff729879b46d14340352761bb158  0.0s 
+ ```
+
+# Sure. For Stata, too.
+
+## Running Docker the Easy Way: Stata
+
+For Stata (and MATLAB), the choices are a bit shorter:
+
+
+- [CodeOcean](https://codeocean.com/)
+- [WholeTale](https://wholetale.org/)
+
+but also
+
+- [Github Action template for Stata](https://github.com/labordynamicsinstitute/continuous-integration-stata) based on excellent work by [Lukman Edwindra](https://github.com/ledwindra).
+  - May be easier to set up
+  - (Currently) does not use the Docker images, takes longer (uses the URL where you downloaded Stata to install it)
+
+# Outlook
+
+## Use by AEA Data Editor team
+
+I am piloting this with some cases to enable reproducibility verification in a shareable and repeatable environment 
+
+- Dinkelman and Ngai (JEP, Feb 2022)[^dinkel]: [Github repo](https://github.com/AEADataEditor/JEP-2021-1239) and [Docker image](https://hub.docker.com/r/aeadataeditor/jep-2021-1239) 
+
+- DellVigna and Pope (AEJ:Micro, forthcoming)[^stefano]: [CodeOcean capsule](https://doi.org/10.24433/CO.0687784.v1) and its copy to openICPSR ([https://doi.org/10.3886/E135221V1](https://doi.org/10.3886/E135221V1))
+
+- Rossi (JEL, Feb 2022)[^rossi]: [CodeOcean capsule](https://doi.org/10.24433/CO.7940775.v1) and its copy to openICPSR ([https://doi.org/10.3886/E147225V1](https://doi.org/10.3886/E147225V1)).
 
 We are working with the [WholeTale](https://wholetale.org/) on similar usage scenarios, and are open to working with authors' choices whereever those may lead.
 
+## Use by authors
 
-# Running Docker locally?
+Example:
+
+- Lamadon, Thibaut, Magne Mogstad, and Bradley Setzler (AER: forthcoming)[^lms] had **4** (**four**) different CodeOcean capsules to illustrate their analysis (which otherwise used confidential data)
+  - Verifying the analysis with confidential data took several months
+  - Verifying the results on CodeOcean took minutes
+
+- Bonhomme, Lamadon, and Manresa (forthcoming Econometrica) use Docker with synthetic data
+
+## Use by research data infrastructure
+
+- [BPLIM](https://bplim.bportugal.pt/) permits authors to use Singularity containers in the secure environment.
+
+## Conclusion
+
+### Containers provide a way to make research more reproducible
+
+- even when software requires a license
+
+### While this may be useful for us in the context of reproducibility checks...
+
+- It is far more useful if authors use this **prior** to submission to *any* journal
+
+### Using containers enables continuous integration
+
+- Higher setup costs, but assured reproducibility and portability throughout
+
+## Some downsides
+
+- Complexity in initial setup
+- Archaic graphical interfaces (not web-based) don't work
+  - MATLAB now has a web-based interface
+  - Rstudio and Jupyter notebooks/ JupyterLab have had for a long time
+- Learning curve for non-DS/CS affine students (and faculty)
+
+# Examples in the literature
+
+## Recent or forthcoming papers
+
+
+- Rossi (JEL, 2022): "Forecasting in the presence of instabilities: How do we know whether models predict"[^rossi]
+- DellaVigna and Pope ([forthcoming in American Economic Journal: Microeconomics](https://www.aeaweb.org/articles?id=10.1257/mic.20200129)) "Stability of Experimental Results: Forecasts and Evidence"[^stefano]
+- Bonhomme, Lamadon, and Manresa (forthcoming Econometrica): "A distributional Framework for matched employer-employee data", [Github repository](https://github.com/tlamadon/blm-replicate)
+
+## Resources
+
+See [my blogpost](https://aeadataeditor.github.io/posts/2021-11-16-docker)
+
+![](images/blogpost-resources.png)
+
+
+# References
+
+--
+
+
+[^1]: Wikipedia. 2021. "List of Linux containers." [wikipedia.org/wiki/List_of_Linux_containers](hhttps://en.wikipedia.org/w/index.php?title=List_of_Linux_containers&oldid=1015376890), accessed on 2021-07-07.
+
+[^2]: Docker.com. 2021. "What is a Container." [docker.com/resources/what-container](https://web.archive.org/web/20210609145942/https://www.docker.com/resources/what-container), accessed on 2021-07-07.
+
+[^4]: For additional steps, and complete instructions, see [github.com/AEADataEditor/docker-r-starter](https://github.com/AEADataEditor/docker-r-starter)
+
+[^intro]: Boettiger, Carl. “An Introduction to Docker for Reproducible Research.” ACM SIGOPS Operating Systems Review 49, no. 1 (January 20, 2015): 71–79. [https://doi.org/10.1145/2723872.2723882](https://doi.org/10.1145/2723872.2723882).
+
+
+[^konkol]: Konkol, Markus, Daniel Nüst, and Laura Goulier. 2020. "Publishing Computational Research - a Review of Infrastructures for Reproducible and Transparent Scholarly Communication." Research Integrity and Peer Review 5, no. 1 (July 14, 2020): 10. [https://doi.org/10.1186/s41073-020-00095-y](https://doi.org/10.1186/s41073-020-00095-y).
+
+[^lms]: Lamadon, Thibaut, Magne Mogstad, and Bradley Setzler. forthcoming. "[Imperfect Competition, Compensating Differentials and Rent Sharing in the U.S. Labor Market.](https://www.aeaweb.org/articles?id=10.1257/aer.20190790)" *American Economic Review* with [Github repository](https://github.com/setzler/LMS) and [1](https://doi.org/10.24433/CO.7147919.v1) [2](https://doi.org/10.24433/CO.3047157.v1) [3](https://doi.org/10.24433/CO.4775581.v1) [4](https://doi.org/10.24433/CO.3648033.v1) compute capsules.
+
+[^dinkel]: Dinkelman, Taryn, and L. Rachel Ngai. 2022. “Time Use and Gender in Africa in Times of Structural Transformation.” *Journal of Economic Perspectives* 36, no. 1 (February 2022): 57–80. [https://doi.org/10.1257/jep.36.1.57](https://doi.org/10.1257/jep.36.1.57). and associated [replication package](https://doi.org/10.3886/E145161V2).
+
+[^rossi]:  Rossi, Barbara. 2021. "Compute Capsule for: Forecasting in the presence of instabilities: How do we know whether models predict [Source Code]." *CodeOcean*. https://doi.org/10.24433/CO.7940775.v1, which accompanies Rossi (2022), in the Journal of Economic Literature ([https://doi.org/10.1257/jel.20201479](https://doi.org/10.1257/jel.20201479)), and which is also archived in the more traditional location as Rossi, Barbara. 2021. "Data and Code for: Forecasting in the Presence of Instabilities." *American Economic Association* [publisher], *Inter-university Consortium for Political and Social Research* [distributor]. https://doi.org/10.3886/E147225V1
+
+[^stefano]: DellaVigna, Stefano and Devin Pope. 2021. "Compute Capsule for: Stability of Experimental Results: Forecasts and Evidence" [Source Code]. *CodeOcean*. https://doi.org/10.24433/CO.0687784.v1, which accompanies a [forthcoming article in American Economic Journal: Microeconomics](https://www.aeaweb.org/articles?id=10.1257/mic.20200129), and which is also archived in the more traditional location as DellaVigna, Stefano, and Devin Pope. 2021. "Data and Code for: Stability of Experimental Results: Forecasts and Evidence." *American Economic Association* [publisher], *Inter-university Consortium for Political and Social Research* [distributor]. https://doi.org/10.3886/E135221V1
+
+# The End.
+
+# Extras
+
+
+## Running Docker locally?
 
 Absolutely.
 
 - For publications, it is very important to keep a record of the computational artifacts (see [AEA Data and Code Availability Policy](https://www.aeaweb.org/journals/data/data-code-policy))
 
-# Running code interactively?
+## Running code interactively?
 
 Yes. 
 
@@ -594,28 +935,4 @@ docker run  \
    Rscript _build.R
 ```
 
-
-
-
-
-
-# References
-
---
-
-
-[^1]: Wikipedia. 2021. "List of Linux containers." [wikipedia.org/wiki/List_of_Linux_containers](hhttps://en.wikipedia.org/w/index.php?title=List_of_Linux_containers&oldid=1015376890), accessed on 2021-07-07.
-
-[^2]: Docker.com. 2021. "What is a Container." [docker.com/resources/what-container](https://web.archive.org/web/20210609145942/https://www.docker.com/resources/what-container), accessed on 2021-07-07.
-
-[^4]: For additional steps, and complete instructions, see [github.com/AEADataEditor/docker-r-starter](https://github.com/AEADataEditor/docker-r-starter)
-
-[^intro]: Boettiger, Carl. “An Introduction to Docker for Reproducible Research.” ACM SIGOPS Operating Systems Review 49, no. 1 (January 20, 2015): 71–79. [https://doi.org/10.1145/2723872.2723882](https://doi.org/10.1145/2723872.2723882).
-
-[^lms]: Lamadon, Thibaut, Magne Mogstad, and Bradley Setzler. forthcoming. "[Imperfect Competition, Compensating Differentials and Rent Sharing in the U.S. Labor Market.](https://www.aeaweb.org/articles?id=10.1257/aer.20190790)" *American Economic Review* with [Github repository](https://github.com/setzler/LMS) and [1](https://doi.org/10.24433/CO.7147919.v1) [2](https://doi.org/10.24433/CO.3047157.v1) [3](https://doi.org/10.24433/CO.4775581.v1) [4](https://doi.org/10.24433/CO.3648033.v1) compute capsules.
-
-
-[^rossi]:  Rossi, Barbara. 2021. "Compute Capsule for: Forecasting in the presence of instabilities: How do we know whether models predict [Source Code]." *CodeOcean*. https://doi.org/10.24433/CO.7940775.v1, which accompanies a forthcoming article in the Journal of Economic Literature, and which is also archived in the more traditional location as Rossi, Barbara. 2021. "Data and Code for: Forecasting in the Presence of Instabilities." *American Economic Association* [publisher], *Inter-university Consortium for Political and Social Research* [distributor]. https://doi.org/10.3886/E147225V1
-
-[^stefano]: DellaVigna, Stefano and Devin Pope. 2021. "Compute Capsule for: Stability of Experimental Results: Forecasts and Evidence" [Source Code]. *CodeOcean*. https://doi.org/10.24433/CO.0687784.v1, which accompanies a [forthcoming article in American Economic Journal: Microeconomics](https://www.aeaweb.org/articles?id=10.1257/mic.20200129), and which is also archived in the more traditional location as DellaVigna, Stefano, and Devin Pope. 2021. "Data and Code for: Stability of Experimental Results: Forecasts and Evidence." *American Economic Association* [publisher], *Inter-university Consortium for Political and Social Research* [distributor]. https://doi.org/10.3886/E135221V1
 
