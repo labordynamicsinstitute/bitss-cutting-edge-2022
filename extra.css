@@ -39,6 +39,17 @@
   margin-bottom: 1em;
 }
 
+.bboxc {
+  text-align: center;
+  padding: 1em;
+  background-color: #fafafa;
+  color: #807f7f;
+  border: 2px solid;
+  border-color: #807f7f;
+  border-radius: 10px;
+  margin-bottom: 1em;
+}
+
 
 
 

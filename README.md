@@ -86,14 +86,33 @@ sessionInfo()
 ## attached base packages:
 ## [1] stats     graphics  grDevices utils     datasets  methods   base     
 ## 
+## other attached packages:
+## [1] webshot_0.5.2   readr_1.4.0     tidycensus_1.1  ggplot2_3.3.3  
+## [5] tictoc_1.0.1    rprojroot_2.0.2 devtools_2.4.1  usethis_2.0.1  
+## [9] dplyr_1.0.6    
+## 
 ## loaded via a namespace (and not attached):
-##  [1] digest_0.6.27     R6_2.5.0          jsonlite_1.7.2    magrittr_2.0.1   
-##  [5] evaluate_0.14     rlang_0.4.11      stringi_1.6.1     jquerylib_0.1.4  
-##  [9] bslib_0.2.5       rmarkdown_2.8     tools_4.0.5       stringr_1.4.0    
-## [13] xfun_0.23         yaml_2.2.1        compiler_4.0.5    htmltools_0.5.1.1
-## [17] knitr_1.33        sass_0.4.0
+##  [1] httr_1.4.2         sass_0.4.0         pkgload_1.2.1      tidyr_1.1.3       
+##  [5] jsonlite_1.7.2     bslib_0.2.5        assertthat_0.2.1   sp_1.4-5          
+##  [9] yaml_2.2.1         remotes_2.3.0      sessioninfo_1.1.1  pillar_1.6.1      
+## [13] lattice_0.20-41    glue_1.4.2         uuid_0.1-4         digest_0.6.27     
+## [17] rvest_1.0.0        colorspace_2.0-1   htmltools_0.5.1.1  pkgconfig_2.0.3   
+## [21] purrr_0.3.4        scales_1.1.1       processx_3.5.2     tigris_1.5        
+## [25] tibble_3.1.2       proxy_0.4-26       generics_0.1.0     ellipsis_0.3.2    
+## [29] cachem_1.0.5       withr_2.4.2        cli_2.5.0          magrittr_2.0.1    
+## [33] crayon_1.4.1       memoise_2.0.0      maptools_1.1-2     evaluate_0.14     
+## [37] ps_1.6.0           fs_1.5.0           fansi_0.4.2        xml2_1.3.2        
+## [41] foreign_0.8-81     class_7.3-18       pkgbuild_1.2.0     tools_4.0.5       
+## [45] prettyunits_1.1.1  hms_1.0.0          lifecycle_1.0.0    stringr_1.4.0     
+## [49] munsell_0.5.0      callr_3.7.0        jquerylib_0.1.4    compiler_4.0.5    
+## [53] e1071_1.7-9        rlang_0.4.11       classInt_0.4-3     units_0.7-2       
+## [57] grid_4.0.5         rappdirs_0.3.3     rmarkdown_2.8      testthat_3.0.2    
+## [61] gtable_0.3.0       DBI_1.1.1          R6_2.5.0           knitr_1.33        
+## [65] rgdal_1.5-27       fastmap_1.1.0      utf8_1.2.1         KernSmooth_2.23-18
+## [69] desc_1.3.0         stringi_1.6.1      Rcpp_1.0.7         vctrs_0.3.8       
+## [73] sf_1.0-2           tidyselect_1.1.1   xfun_0.23
 ```
-  - All binary versions of packages are installed from https://packagemanager.rstudio.com/cran/__linux__/focal/2021-05-17.
+  - All binary versions of packages are installed from https://packagemanager.rstudio.com/all/__linux__/bionic/2021-10-01+Y3JhbiwyOjQ1MjYyMTU7NDJGRDU3MTc.
 
 ### Memory and Runtime Requirements
 

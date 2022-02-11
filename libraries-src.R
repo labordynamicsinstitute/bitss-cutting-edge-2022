@@ -40,7 +40,7 @@ if (get_os()=="linux") {
   options(repos=paste0("https://cran.microsoft.com/snapshot/",mran.date,"/"))
 }
 
-
+# For "tidycensus"
 # force re-install of Rcpp - as of 2021-10-28, there's an incompatibility in some function
 # error: function 'Rcpp_precious_remove' not provided by package 'Rcpp'
 install.packages("Rcpp",dep=TRUE)
