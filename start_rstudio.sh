@@ -3,10 +3,13 @@ PWD=$(pwd)
 repo=${PWD##*/}
 dockerspace=larsvilhuber
 
+
 case $USER in
-  vilhuber)
+  *vilhuber)
   #WORKSPACE=$HOME/Workspace/git
   WORKSPACE=$PWD
+  # We need the Census API key for this one
+  [[ -f .Renviron ]] && source .Renviron
   ;;
   codespace)
   WORKSPACE=/workspaces
